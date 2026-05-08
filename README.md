@@ -10,10 +10,18 @@ docker compose up --build
 
 Open `http://localhost/` to see the active version, and `http://localhost/healthz` for the proxy health endpoint.
 
-## Manual switch (local dev)
+## Traffic switch (local dev)
 
-Edit `nginx/conf.d/active-upstream.conf` to point `app_active` at `app_green`, then reload NGINX:
+Windows:
+
+```powershell
+./scripts/switch-traffic.ps1 -Target green
+```
+
+Bash:
 
 ```bash
-docker compose exec nginx nginx -s reload
+./scripts/switch-traffic.sh green
 ```
+
+These scripts rewrite `nginx/conf.d/active-upstream.conf` and reload NGINX. When green is active, blue is configured as a backup server so 5xx/timeouts fail over automatically.
