@@ -28,6 +28,6 @@ upstream app_active {
 EOF
 fi
 
-docker compose exec nginx nginx -s reload
+docker compose exec -T nginx nginx -s reload
 
 echo "Switched active upstream to $target."

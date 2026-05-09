@@ -25,6 +25,6 @@ upstream app_active {
 "@ | Set-Content -Path $activeFile -Encoding Ascii
 }
 
-docker compose exec nginx nginx -s reload
+docker compose exec -T nginx nginx -s reload
 
 Write-Host "Switched active upstream to $Target."

@@ -1,19 +1,23 @@
 services:
   app_blue:
     build: .
-    image: zdt-shifter:local
+    image: ${ZDT_IMAGE:-zdt-shifter:local}
     environment:
       APP_VERSION: "blue"
       APP_COLOR: "blue"
+    ports:
+      - "8080:8000"
     expose:
       - "8000"
 
   app_green:
     build: .
-    image: zdt-shifter:local
+    image: ${ZDT_IMAGE:-zdt-shifter:local}
     environment:
       APP_VERSION: "green"
       APP_COLOR: "green"
+    ports:
+      - "8081:8000"
     expose:
       - "8000"
 
