@@ -25,12 +25,21 @@ upstream app_active {
 "@ | Set-Content -Path $activeFile -Encoding Ascii
 }
 
-$null = docker compose up -d --no-build nginx
-if ($LASTEXITCODE -ne 0) {
-  Write-Host "Failed to start nginx."
-  docker compose ps
-  docker compose logs --no-color nginx
+$existingId = docker compose ps -a -q nginx
+if (-not $existingId) {
+  Write-Host "Nginx container not found. Run: docker compose up -d nginx"
   exit 1
+}
+
+$runningId = docker compose ps -q nginx
+if (-not $runningId) {
+  docker compose start nginx
+  if ($LASTEXITCODE -ne 0) {
+    Write-Host "Failed to start nginx."
+    docker compose ps
+    docker compose logs --no-color nginx
+    exit 1
+  }
 }
 
 $reloaded = $false

@@ -28,11 +28,20 @@ upstream app_active {
 EOF
 fi
 
-if ! docker compose up -d --no-build nginx; then
-  echo "Failed to start nginx."
-  docker compose ps
-  docker compose logs --no-color nginx
+existing_id=$(docker compose ps -a -q nginx || true)
+if [[ -z "$existing_id" ]]; then
+  echo "Nginx container not found. Run: docker compose up -d nginx"
   exit 1
+fi
+
+running_id=$(docker compose ps -q nginx || true)
+if [[ -z "$running_id" ]]; then
+  if ! docker compose start nginx; then
+    echo "Failed to start nginx."
+    docker compose ps
+    docker compose logs --no-color nginx
+    exit 1
+  fi
 fi
 
 for i in {1..10}; do
