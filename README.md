@@ -87,3 +87,7 @@ After a successful switch, remove the inactive app container and drop the backup
 ```bash
 ./scripts/cleanup-inactive.sh green
 ```
+
+
+
+#end
