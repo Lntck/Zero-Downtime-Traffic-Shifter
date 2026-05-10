@@ -28,6 +28,22 @@ upstream app_active {
 EOF
 fi
 
-docker compose exec -T nginx nginx -s reload
+if ! docker compose up -d --no-build nginx; then
+  echo "Failed to start nginx."
+  docker compose ps
+  docker compose logs --no-color nginx
+  exit 1
+fi
 
-echo "Switched active upstream to $target."
+for i in {1..10}; do
+  if docker compose exec -T nginx nginx -s reload; then
+    echo "Switched active upstream to $target."
+    exit 0
+  fi
+  echo "Waiting for nginx to be ready..."
+  sleep 1
+done
+
+docker compose ps
+docker compose logs --no-color nginx
+exit 1

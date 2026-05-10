@@ -25,6 +25,29 @@ upstream app_active {
 "@ | Set-Content -Path $activeFile -Encoding Ascii
 }
 
-docker compose exec -T nginx nginx -s reload
+$null = docker compose up -d --no-build nginx
+if ($LASTEXITCODE -ne 0) {
+  Write-Host "Failed to start nginx."
+  docker compose ps
+  docker compose logs --no-color nginx
+  exit 1
+}
+
+$reloaded = $false
+for ($i = 0; $i -lt 10; $i++) {
+  docker compose exec -T nginx nginx -s reload
+  if ($LASTEXITCODE -eq 0) {
+    $reloaded = $true
+    break
+  }
+  Write-Host "Waiting for nginx to be ready..."
+  Start-Sleep -Seconds 1
+}
+
+if (-not $reloaded) {
+  docker compose ps
+  docker compose logs --no-color nginx
+  exit 1
+}
 
 Write-Host "Switched active upstream to $Target."
