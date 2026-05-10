@@ -56,7 +56,7 @@ jobs:
 
       - name: Verify green is active
         run: |
-            curl -sf http://localhost/ | python3 - <<'PY'
+          curl -sf http://localhost/ | python3 - <<'PY'
           import json, sys
           data = json.load(sys.stdin)
           if data.get("color") != "green":
