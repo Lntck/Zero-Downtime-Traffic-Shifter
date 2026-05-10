@@ -1,0 +1,28 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: deployment-health
+    folder: Deployment
+    interval: 1m
+    rules:
+      - uid: nginx_exporter_down
+        title: Nginx exporter down
+        condition: A
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            model:
+              expr: up{job="nginx_exporter"} == 0
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 1m
+        labels:
+          severity: page
+        annotations:
+          summary: "Nginx exporter is down"
+          description: "Grafana cannot query Nginx metrics."
