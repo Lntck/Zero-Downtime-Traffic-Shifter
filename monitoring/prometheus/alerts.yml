@@ -1,0 +1,11 @@
+groups:
+  - name: infrastructure
+    rules:
+      - alert: NginxExporterDown
+        expr: up{job="nginx_exporter"} == 0
+        for: 1m
+        labels:
+          severity: page
+        annotations:
+          summary: "Nginx exporter is down"
+          description: "Prometheus cannot scrape Nginx metrics."

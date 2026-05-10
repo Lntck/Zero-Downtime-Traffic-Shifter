@@ -3,6 +3,7 @@ import os
 import socket
 
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 
 app = FastAPI(title="Zero-Downtime Traffic Shifter")
 
@@ -14,13 +15,18 @@ STARTED_AT = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 @app.get("/")
 def root():
-    return {
+    payload = {
         "message": "hello",
         "version": APP_VERSION,
         "color": APP_COLOR,
         "hostname": HOSTNAME,
         "started_at": STARTED_AT,
     }
+    headers = {
+        "X-App-Color": APP_COLOR,
+        "X-App-Version": APP_VERSION,
+    }
+    return JSONResponse(content=payload, headers=headers)
 
 
 @app.get("/health")
