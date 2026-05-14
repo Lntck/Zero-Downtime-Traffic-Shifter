@@ -78,7 +78,21 @@ Bash:
 ./scripts/switch-traffic.sh green
 ```
 
-These scripts rewrite `nginx/conf.d/active-upstream.conf` and reload NGINX. When green is active, blue is configured as a backup server so 5xx/timeouts fail over automatically.
+These scripts rewrite `nginx/conf.d/active-upstream.conf` and reload NGINX. If the reload fails, the previous config is restored automatically. When green is active, blue is configured as a backup server so 5xx/timeouts fail over automatically.
+
+To switch and remove the inactive container in one step:
+
+Windows:
+
+```powershell
+./scripts/switch-traffic.ps1 -Target green -Cleanup
+```
+
+Bash:
+
+```bash
+./scripts/switch-traffic.sh green --cleanup
+```
 
 ## CI/CD (GitHub Actions)
 
@@ -131,7 +145,7 @@ ansible-playbook -i ansible/inventory.example.ini ansible/site.yml \
 
 ## Cleanup
 
-After a successful switch, remove the inactive app container and drop the backup server:
+After a successful switch, remove the inactive app container and drop the backup server. If the reload fails, the previous config is restored automatically:
 
 ```powershell
 ./scripts/cleanup-inactive.ps1 -Target green

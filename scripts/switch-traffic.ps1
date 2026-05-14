@@ -1,11 +1,18 @@
 param(
   [Parameter(Mandatory = $true)]
   [ValidateSet("blue", "green")]
-  [string]$Target
+  [string]$Target,
+  [switch]$Cleanup
 )
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $activeFile = Join-Path $repoRoot "nginx\conf.d\active-upstream.conf"
+$backupFile = $null
+if (Test-Path $activeFile) {
+  $timestamp = Get-Date -Format "yyyyMMddHHmmss"
+  $backupFile = "$activeFile.bak.$timestamp"
+  Copy-Item -Path $activeFile -Destination $backupFile -Force
+}
 
 if ($Target -eq "blue") {
 @"
@@ -54,9 +61,19 @@ for ($i = 0; $i -lt 10; $i++) {
 }
 
 if (-not $reloaded) {
+  if ($backupFile) {
+    Copy-Item -Path $backupFile -Destination $activeFile -Force
+    docker compose exec -T nginx nginx -s reload | Out-Null
+  }
   docker compose ps
   docker compose logs --no-color nginx
   exit 1
+}
+
+if ($Cleanup) {
+  $inactive = if ($Target -eq "blue") { "green" } else { "blue" }
+  docker compose stop "app_$inactive" | Out-Null
+  docker compose rm -f "app_$inactive" | Out-Null
 }
 
 Write-Host "Switched active upstream to $Target."
