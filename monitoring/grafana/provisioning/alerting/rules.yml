@@ -12,9 +12,11 @@ groups:
         data:
           - refId: A
             datasourceUid: prometheus
+            relativeTimeRange:
+              from: 300
+              to: 0
             model:
               expr: up{job="nginx_exporter"} == 0
-              instant: true
               intervalMs: 1000
               maxDataPoints: 43200
               refId: A

@@ -5,7 +5,7 @@ contactPoints:
     name: Alertmanager
     receivers:
       - uid: alertmanager-webhook
-        type: alertmanager
+        type: webhook
         settings:
-          url: http://alertmanager:9093
+          url: http://alertmanager:9093/api/v2/alerts
         disableResolveMessage: false
