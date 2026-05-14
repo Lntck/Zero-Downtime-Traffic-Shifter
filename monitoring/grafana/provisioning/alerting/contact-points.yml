@@ -1,0 +1,11 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: Alertmanager
+    receivers:
+      - uid: alertmanager-webhook
+        type: alertmanager
+        settings:
+          url: http://alertmanager:9093
+        disableResolveMessage: false
